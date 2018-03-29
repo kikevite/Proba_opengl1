@@ -7,6 +7,7 @@ import android.media.effect.EffectFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
+import android.util.DisplayMetrics;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -27,8 +28,20 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
 
     public void setTexture(Bitmap texture) {
         photo = texture;
-        photoWidth = texture.getWidth();
-        photoHeight = texture.getHeight();
+        int limit = 700;
+        int alt = texture.getWidth();
+        int ample = texture.getHeight();
+        int max = Math.max(alt, ample);
+        float ratio = (float) ample / (float) alt;
+        if (max > limit) {
+            if (max == ample) {
+                photoWidth = limit;
+                photoHeight = (int) (limit * ratio);
+            } else if (max == alt) {
+                photoWidth = (int) (limit / ratio);
+                photoHeight = limit;
+            }
+        }
     }
 
     public EffectsRenderer() {

@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 float temp = i / 20f;
-                Log.i("kike", String.valueOf(temp));
+                Log.i("kike", "valor:" + String.valueOf(temp) + " barra: " + i);
                 efRend.serParam(temp);
             }
 
@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            bar.setProgress(max_barra / 10);
         }
     }
 }

@@ -8,8 +8,8 @@
 
     <android.opengl.GLSurfaceView
         android:id="@+id/surface"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_width="380dp"
+        android:layout_height="380dp"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
 
