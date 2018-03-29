@@ -1,8 +1,6 @@
 package kikevite.proba_opengl1;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.effect.Effect;
 import android.media.effect.EffectContext;
 import android.media.effect.EffectFactory;
@@ -19,12 +17,22 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
     private int photoWidth, photoHeight;
     private EffectContext effectContext;
     private Effect effect;
+    private int textures[] = new int[2];
+    private Square square;
+    private float param = 1f;
 
-    public EffectsRenderer(Context context) {
+    public void serParam(float param) {
+        this.param = param;
+    }
+
+    public void setTexture(Bitmap texture) {
+        photo = texture;
+        photoWidth = texture.getWidth();
+        photoHeight = texture.getHeight();
+    }
+
+    public EffectsRenderer() {
         super();
-        photo = BitmapFactory.decodeResource(context.getResources(), R.drawable.tambor);
-        photoWidth = photo.getWidth();
-        photoHeight = photo.getHeight();
     }
 
     @Override
@@ -46,12 +54,9 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
         if (effect != null) {
             effect.release();
         }
-        brightnessEffect(0.8f);
+        brightnessEffect(param);
         square.draw(textures[1]);
     }
-
-    private int textures[] = new int[2];
-    private Square square;
 
     private void generateSquare() {
         GLES20.glGenTextures(2, textures, 0);

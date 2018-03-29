@@ -24,6 +24,9 @@ public class Square {
 
     private FloatBuffer verticesBuffer;
     private FloatBuffer textureBuffer;
+    private int vertexShader;
+    private int fragmentShader;
+    private int program;
 
     private void initializeBuffers() {
         ByteBuffer buff = ByteBuffer.allocateDirect(vertices.length * 4);
@@ -55,10 +58,6 @@ public class Square {
                     "void main() {" +
                     "  gl_FragColor = texture2D(uTexture, vTexPosition);" +
                     "}";
-
-    private int vertexShader;
-    private int fragmentShader;
-    private int program;
 
     private void initializeProgram() {
         vertexShader = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
