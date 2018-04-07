@@ -4,10 +4,11 @@ import android.graphics.Bitmap;
 import android.media.effect.Effect;
 import android.media.effect.EffectContext;
 import android.media.effect.EffectFactory;
+import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
-import android.util.DisplayMetrics;
+import android.util.Log;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -20,10 +21,10 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
     private Effect effect;
     private int textures[] = new int[2];
     private Square square;
-    private float param = 1f;
+    private int fxParam = 1;
 
-    public void serParam(float param) {
-        this.param = param;
+    public void serParam(int parametre) {
+        this.fxParam = parametre;
     }
 
     public void setTexture(Bitmap texture) {
@@ -67,7 +68,35 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
         if (effect != null) {
             effect.release();
         }
-        brightnessEffect(param);
+        ////////////////////////////Efecte//////////////////////////
+        //autofixEffect(fxParam);       // ok
+        //backdropperEffect();          // no probat
+        //bitmapoverlayEffect();        // no probat
+        //blackwhiteEffect(100, 150);   // ok, ... :(
+        //brightnessEffect(fxParam);    // ok
+        //contrastEffect(fxParam);      // ok
+        //cropEffect();                 // no probat
+        //crossprocessEffect();         // ok
+        //documentaryEffect();          // ok
+        //duotoneEffect();              // no probat
+        //filllightEffect(fxParam);     // ok
+        //fisheyeEffect(fxParam);       // ok
+        //flipEffect(false, false);     // ok
+        //grainEffect(fxParam);         // l'efecte que fa no es massa bo
+        //grayScaleEffect();            // ok
+        //lomoishEffect();              // ok
+        //negativeEffect();             // ok
+        //posterizeEffect();            // ok
+        //redeyeEffect();               // no probat
+        //rotateEffect(fxParam);        // error
+        //saturateEffect(fxParam);      // ok
+        //sepiaEffect();                // ok
+        //sharpenEffect(fxParam);       // l'efecte que fa no es massa bo
+        //straightenEffect(fxParam);    // ok, retalla la imatge tambe
+        //temperatureEffect(fxParam);   // ok
+        //tintEffect();          // no probat
+        //vignetteEffect(fxParam);      // nomes fa forma rodona i negra??
+        ////////////////////////////Efecte//////////////////////////
         square.draw(textures[1]);
     }
 
@@ -84,16 +113,243 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
         square = new Square();
     }
 
-    private void grayScaleEffect(float f) {
+    private void autofixEffect(int barra) {
+        // float (al manual posa de 0 a 1, pero funciona fora del rang)
+        float val = barra / -20f + 5f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_AUTOFIX);
+        effect.setParameter("scale", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void backdropperEffect(Uri uri) {
+        // Uri.toString()
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_BACKDROPPER);
+        effect.setParameter("source", uri.toString());
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void bitmapoverlayEffect(Bitmap b) {
+        // Bitmap no null
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_BITMAPOVERLAY);
+        effect.setParameter("bitmap", b);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void blackwhiteEffect(float min, float max) {
+        // float 0 a 1
+        float val_min = min / 200f;
+        float val_max = max / 200f;
+        Log.i("kike", "valor min : " + val_min +" valor max : " + val_max + " barra: " + min + " " + max);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_BLACKWHITE);
+        effect.setParameter("black", val_min);
+        effect.setParameter("white", val_max);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void brightnessEffect(int barra) {
+        // float positiu, 1 = no fa res, 0 fosc, com mes alt mes brillant
+        float val = barra / 20f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_BRIGHTNESS);
+        effect.setParameter("brightness", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void contrastEffect(int barra) {
+        // float, 1 = no fa res, com mes alt mes contrast
+        float val = barra / 40f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_CONTRAST);
+        effect.setParameter("contrast", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void cropEffect(int x, int y, int width, int height) {
+        // int entre 0 i width
+        // int entre 0 i height
+        // int que estigui dins la imatge
+        // int que estigui dins la imatge
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_CROP);
+        effect.setParameter("xorigin", x);
+        effect.setParameter("yorigin", y);
+        effect.setParameter("width", width);
+        effect.setParameter("height", height);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void crossprocessEffect() {
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_CROSSPROCESS);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void documentaryEffect() {
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_DOCUMENTARY);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void duotoneEffect(int firstC, int secC) {
+        // int ARGB 8 bits Color.algo() ...
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_DUOTONE);
+        effect.setParameter("first_color", firstC);
+        effect.setParameter("second_color", secC);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void filllightEffect(int barra) {
+        // float (al manual posa de 0 a 1, pero funciona fora del rang)
+        float val = barra / 75f - 1.3333333f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_FILLLIGHT);
+        effect.setParameter("strength", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void fisheyeEffect(int barra) {
+        // float (al manual posa de 0 a 1, pero funciona fora del rang)
+        float val = barra / 127f - 0.08f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_FISHEYE);
+        effect.setParameter("scale", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void flipEffect(boolean vertical, boolean horizontal) {
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_FLIP);
+        effect.setParameter("vertical", vertical);
+        effect.setParameter("horizontal", horizontal);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void grainEffect(int barra) {
+        // float (al manual posa de 0 a 1, pero funciona fora del rang)
+        float val = barra / 200f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_GRAIN);
+        effect.setParameter("strength", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void grayScaleEffect() {
         EffectFactory factory = effectContext.getFactory();
         effect = factory.createEffect(EffectFactory.EFFECT_GRAYSCALE);
         effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
     }
 
-    private void brightnessEffect(float f) {
+    private void lomoishEffect() {
         EffectFactory factory = effectContext.getFactory();
-        effect = factory.createEffect(EffectFactory.EFFECT_BRIGHTNESS);
-        effect.setParameter("brightness", f);
+        effect = factory.createEffect(EffectFactory.EFFECT_LOMOISH);
         effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
     }
+
+    private void negativeEffect() {
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_NEGATIVE);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void posterizeEffect() {
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_POSTERIZE);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void redeyeEffect(float[] f) {
+        // array de floats on ( f[2*i], f[2*i+1]) es el centre del 'i' ull
+        // les coordenades han d'estar normalitzades entre 0 i 1
+        float val = 0;
+        Log.i("kike", "valor efecte: " + val + " barra: ");
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_REDEYE);
+        effect.setParameter("centers", f);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void rotateEffect(int barra) {
+        // s'arrodoniral al multiple de 90 mes proxim
+        int val = barra;
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_ROTATE);
+        effect.setParameter("angle", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void saturateEffect(int barra) {
+        // float entre -1 i 1
+        float val = barra / 100f -1f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_SATURATE);
+        effect.setParameter("scale", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void sepiaEffect() {
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_SEPIA);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void sharpenEffect(int barra) {
+        // float (al manual posa de 0 a 1, pero funciona fora del rang)
+        float val = barra / 100f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_SHARPEN);
+        effect.setParameter("scale", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void straightenEffect(int barra) {
+        // float (al manual posa de -45 a 45, pero funciona fora del rang)
+        float val = barra *1.8f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_STRAIGHTEN);
+        effect.setParameter("angle", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void temperatureEffect(int barra) {
+        // float entre 0 i 1 (no s'ha probat pero suposo que funciona fora dels rangs tambe)
+        float val = barra / 200f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_TEMPERATURE);
+        effect.setParameter("scale", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void tintEffect(int color) {
+        // int ARGB 8 bits Color.algo() ...
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_TINT);
+        effect.setParameter("tint", color);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
+    private void vignetteEffect(int barra) {
+        // float entre 0 i 1
+        float val = barra / 200f;
+        Log.i("kike", "valor efecte: " + val + " barra: " + barra);
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_VIGNETTE);
+        effect.setParameter("scale", val);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
+    }
+
 }
