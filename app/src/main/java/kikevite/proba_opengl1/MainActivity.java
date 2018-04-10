@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -157,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         return year + "." + month + "." + day + "_" + hour + "." + minute + "." + second + ".jpg";
     }
 
-
     // Guardar una foto en un arxiu JPG
     private boolean saveImage(String name) {
 
@@ -166,23 +167,30 @@ public class MainActivity extends AppCompatActivity {
         //GLES20.glGetTexImage(GL_TEXTURE_2D, 10, GL_RGBA, GL_SIGNED_INT_8_8_8_8, array);
 
 
+
+
         int w = 100;
         int h = w;
         ByteBuffer buffer = ByteBuffer.allocateDirect(w * h * 4);
         //buffer.order(ByteOrder.LITTLE_ENDIAN);
         GLES20.glReadPixels(0, 0, w, h, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer);
-        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        bitmap.copyPixelsFromBuffer(buffer);
 
+
+
+        //Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        //bitmap.copyPixelsFromBuffer(buffer);
+
+
+        Drawable d = mySurfaceView.getForeground();
 
         String image_dir = "/aaaa_OpenGLTest/";
         boolean guardat_ok = true;
 
-        /*
+        /**/
         // ima_final es un Imageview
-        BitmapDrawable draw = (BitmapDrawable) ima_final.getDrawable();
+        BitmapDrawable draw = (BitmapDrawable) d;
         Bitmap bitmap = draw.getBitmap();
-        */
+        /**/
 
         FileOutputStream outStream;
         File dir = new File(Environment.getExternalStorageDirectory(), image_dir);
