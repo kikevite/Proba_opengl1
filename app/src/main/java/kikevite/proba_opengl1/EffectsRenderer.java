@@ -15,21 +15,24 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class EffectsRenderer implements GLSurfaceView.Renderer {
 
-    private Bitmap photo;
-    private int photoWidth, photoHeight;
+    private Bitmap photo;                   // Bitmap on es guarda la imatge
+    private int photoWidth, photoHeight;    // Ample i alt del bitmap 'photo'
     private EffectContext effectContext;
     private Effect effect;
     private int textures[] = new int[2];
-    private Square square;
-    private int fxParam = 1;
+    // [0] conte la imatge sobre la qual s'aplicara l'efecte
+    // i [1] conte la imatge amb l'efecte ja aplicat
+    private Square square;                  // Lienzo on es dibuixaran les textures
+    private int fxValue = 1;                // Parametre de quantitat d'efecte
+    private int limit = 700;                // Longitud maxima tant de alt com d'ample (en pixels)
 
-    public void serParam(int parametre) {
-        this.fxParam = parametre;
+    public void setFxValue(int parametre) {
+        this.fxValue = parametre;
     }
 
+    // Assigna un Bitmap a la Surface
     public void setTexture(Bitmap texture) {
         photo = texture;
-        int limit = 700;
         int alt = texture.getWidth();
         int ample = texture.getHeight();
         int max = Math.max(alt, ample);
@@ -45,14 +48,17 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
         }
     }
 
+    // Constructor heredat
     public EffectsRenderer() {
         super();
     }
 
+    // Es crida quan el Surface es crea o es re-crea
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
     }
 
+    // Es crida una vegada quan es crea el Surface i cada cop que es canvia el tamany del Surface
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
@@ -60,6 +66,7 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
         generateSquare();
     }
 
+    // Es crida quan es dibuixa el 'frame' actual
     @Override
     public void onDrawFrame(GL10 gl) {
         if (effectContext == null) {
@@ -69,33 +76,34 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
             effect.release();
         }
         ////////////////////////////Efecte//////////////////////////
-        //autofixEffect(fxParam);       // ok
+        //noEffect();
+        //autofixEffect(fxValue);       // ok
         //backdropperEffect();          // no probat
         //bitmapoverlayEffect();        // no probat
         //blackwhiteEffect(100, 150);   // ok, ... :(
-        //brightnessEffect(fxParam);    // ok
-        //contrastEffect(fxParam);      // ok
+        brightnessEffect(fxValue);    // ok
+        //contrastEffect(fxValue);      // ok
         //cropEffect();                 // no probat
         //crossprocessEffect();         // ok
         //documentaryEffect();          // ok
         //duotoneEffect();              // no probat
-        //filllightEffect(fxParam);     // ok
-        //fisheyeEffect(fxParam);       // ok
+        //filllightEffect(fxValue);     // ok
+        //fisheyeEffect(fxValue);       // ok
         //flipEffect(false, false);     // ok
-        //grainEffect(fxParam);         // l'efecte que fa no es massa bo
+        //grainEffect(fxValue);         // l'efecte que fa no es massa bo
         //grayScaleEffect();            // ok
         //lomoishEffect();              // ok
         //negativeEffect();             // ok
         //posterizeEffect();            // ok
         //redeyeEffect();               // no probat
-        //rotateEffect(fxParam);        // error
-        //saturateEffect(fxParam);      // ok
+        //rotateEffect(fxValue);        // error
+        //saturateEffect(fxValue);      // ok
         //sepiaEffect();                // ok
-        //sharpenEffect(fxParam);       // l'efecte que fa no es massa bo
-        //straightenEffect(fxParam);    // ok, retalla la imatge tambe
-        //temperatureEffect(fxParam);   // ok
-        //tintEffect();          // no probat
-        //vignetteEffect(fxParam);      // nomes fa forma rodona i negra??
+        //sharpenEffect(fxValue);       // l'efecte que fa no es massa bo
+        //straightenEffect(fxValue);    // ok, retalla la imatge tambe
+        //temperatureEffect(fxValue);   // ok
+        //tintEffect();                 // no probat
+        //vignetteEffect(fxValue);      // nomes fa forma rodona i negra??
         ////////////////////////////Efecte//////////////////////////
         square.draw(textures[1]);
     }
@@ -111,6 +119,13 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
 
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, photo, 0);
         square = new Square();
+    }
+
+    private void noEffect() {
+        EffectFactory factory = effectContext.getFactory();
+        effect = factory.createEffect(EffectFactory.EFFECT_BRIGHTNESS);
+        effect.setParameter("brightness", 1f);
+        effect.apply(textures[0], photoWidth, photoHeight, textures[1]);
     }
 
     private void autofixEffect(int barra) {

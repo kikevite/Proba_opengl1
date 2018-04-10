@@ -8,6 +8,7 @@ import java.nio.FloatBuffer;
 
 public class Square {
 
+    // Amb OpenGL nomes es poden dibuixar triangles, aixi que crearem un quadrat a partir de dos triangles
     private float vertices[] = {
             -1f, -1f,
             1f, -1f,
@@ -15,6 +16,7 @@ public class Square {
             1f, 1f,
     };
 
+    // Coordenades dels vertex de la textura
     private float textureVertices[] = {
             0f, 1f,
             1f, 1f,
@@ -22,12 +24,15 @@ public class Square {
             1f, 0f
     };
 
+    // OpenGL necessita que els dos parametres anteriors siguin buffers
     private FloatBuffer verticesBuffer;
     private FloatBuffer textureBuffer;
+
     private int vertexShader;
     private int fragmentShader;
     private int program;
 
+    // Convertir els vertex i les coordenades en buffers
     private void initializeBuffers() {
         ByteBuffer buff = ByteBuffer.allocateDirect(vertices.length * 4);
         buff.order(ByteOrder.nativeOrder());
@@ -42,6 +47,7 @@ public class Square {
         textureBuffer.position(0);
     }
 
+    // Creacio dels shaders
     private final String vertexShaderCode =
             "attribute vec4 aPosition;" +
                     "attribute vec2 aTexPosition;" +
@@ -58,6 +64,7 @@ public class Square {
                     "void main() {" +
                     "  gl_FragColor = texture2D(uTexture, vTexPosition);" +
                     "}";
+    ///
 
     private void initializeProgram() {
         vertexShader = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
@@ -75,6 +82,7 @@ public class Square {
         GLES20.glLinkProgram(program);
     }
 
+    // Dibuixa el quadrat definit anteriorment
     public void draw(int texture) {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         GLES20.glUseProgram(program);
@@ -98,6 +106,7 @@ public class Square {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
     }
 
+    // Constructor
     public Square() {
         initializeBuffers();
         initializeProgram();
