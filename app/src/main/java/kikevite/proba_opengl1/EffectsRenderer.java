@@ -19,12 +19,10 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
     private int photoWidth, photoHeight;    // Ample i alt del bitmap 'photo'
     private EffectContext effectContext;
     private Effect effect;
-    private int textures[] = new int[2];
-    // [0] conte la imatge sobre la qual s'aplicara l'efecte
-    // i [1] conte la imatge amb l'efecte ja aplicat
+    private int textures[] = new int[2];    // ID de les textures OpenGL de la imatge normal i amb efecte
     private Square square;                  // Lienzo on es dibuixaran les textures
     private int fxValue = 1;                // Parametre de quantitat d'efecte
-    private int limit = 700;                // Longitud maxima tant de alt com d'ample (en pixels)
+    private int limit = 630;                // Longitud maxima tant de alt com d'ample (en pixels)
 
     public void setFxValue(int parametre) {
         this.fxValue = parametre;
@@ -163,7 +161,7 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
         // float 0 a 1
         float val_min = min / 200f;
         float val_max = max / 200f;
-        Log.i("kike", "valor min : " + val_min +" valor max : " + val_max + " barra: " + min + " " + max);
+        Log.i("kike", "valor min : " + val_min + " valor max : " + val_max + " barra: " + min + " " + max);
         EffectFactory factory = effectContext.getFactory();
         effect = factory.createEffect(EffectFactory.EFFECT_BLACKWHITE);
         effect.setParameter("black", val_min);
@@ -310,7 +308,7 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
 
     private void saturateEffect(int barra) {
         // float entre -1 i 1
-        float val = barra / 100f -1f;
+        float val = barra / 100f - 1f;
         Log.i("kike", "valor efecte: " + val + " barra: " + barra);
         EffectFactory factory = effectContext.getFactory();
         effect = factory.createEffect(EffectFactory.EFFECT_SATURATE);
@@ -336,7 +334,7 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
 
     private void straightenEffect(int barra) {
         // float (al manual posa de -45 a 45, pero funciona fora del rang)
-        float val = barra *1.8f;
+        float val = barra * 1.8f;
         Log.i("kike", "valor efecte: " + val + " barra: " + barra);
         EffectFactory factory = effectContext.getFactory();
         effect = factory.createEffect(EffectFactory.EFFECT_STRAIGHTEN);
