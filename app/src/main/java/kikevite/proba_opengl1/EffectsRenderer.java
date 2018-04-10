@@ -56,11 +56,13 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
     // Es crida quan el Surface es crea o es re-crea
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        Log.i("kike", "onSurfaceCreated");
     }
 
     // Es crida una vegada quan es crea el Surface i cada cop que es canvia el tamany del Surface
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        Log.i("kike", "onSurfaceChanged");
         GLES20.glViewport(0, 0, width, height);
         GLES20.glClearColor(0, 0, 0, 1);
         generateSquare();
@@ -69,6 +71,7 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
     // Es crida quan es dibuixa el 'frame' actual
     @Override
     public void onDrawFrame(GL10 gl) {
+        Log.i("kike", "onDrawFrame");
         if (effectContext == null) {
             effectContext = EffectContext.createWithCurrentGlContext();
         }
@@ -117,7 +120,9 @@ public class EffectsRenderer implements GLSurfaceView.Renderer {
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, photo, 0);
+        if (photo != null) {
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, photo, 0);
+        }
         square = new Square();
     }
 

@@ -19,10 +19,10 @@ IMPORTANT S'ha d'afegir al manifest que s'ha de tenir OpenGL instalat a Android!
 
 public class MainActivity extends AppCompatActivity {
 
-    private GLSurfaceView mySurfaceView;
-    private SeekBar bar;
-    private EffectsRenderer efRend;
-    private int max_barra = 200;
+    private GLSurfaceView mySurfaceView;        // "Quadre" del layout on es dibuixa la imatge
+    private SeekBar bar;                        // Barra de valor de l'efecte
+    private EffectsRenderer efRend;             // Render de la imatge
+    private int max_barra = 200;                // Valor maxim de la barra
 
     /*
     S'haurien d'implementar però de moment dona error
@@ -48,8 +48,7 @@ public class MainActivity extends AppCompatActivity {
         mySurfaceView = (GLSurfaceView) findViewById(R.id.surface);
         mySurfaceView.setEGLContextClientVersion(2);
         mySurfaceView.setRenderer(efRend);
-        mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        // S'hauria de canviar per RENDERMODE_WHEN_DIRTY
+        mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
         // Obrim la galeria per triar la foto
         Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -69,7 +68,9 @@ public class MainActivity extends AppCompatActivity {
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                // S'actualitza el valor de l'efecte i es refresca la imatge
                 efRend.setFxValue(i);
+                mySurfaceView.requestRender();
             }
 
             @Override
