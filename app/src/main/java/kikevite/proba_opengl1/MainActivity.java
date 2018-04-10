@@ -1,22 +1,35 @@
 package kikevite.proba_opengl1;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Calendar;
 
 /*
-IMPORTANT S'ha d'afegir al manifest que s'ha de tenir OpenGL instalat a Android!!
+IMPORTANT
+S'ha d'afegir al manifest que s'ha de tenir OpenGL instalat a Android!!
+Per la part de guardar el fitxer, s'ha d'afegir al manifest demanar permis
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -25,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar bar;                        // Barra de valor de l'efecte
     private EffectsRenderer efRend;             // Render de la imatge
     private int max_barra = 200;                // Valor maxim de la barra
-    private Button btn;
+    private Button btn;                         // boto de guardar
+
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
     /*
     S'haurien d'implementar però de moment dona error
@@ -47,15 +62,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Es demana el permis per escriure fitxers
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+            }
+        }
+
         efRend = new EffectsRenderer();
         mySurfaceView = (GLSurfaceView) findViewById(R.id.surface);
         mySurfaceView.setEGLContextClientVersion(2);
         mySurfaceView.setRenderer(efRend);
         mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-
-        // Obrim la galeria per triar la foto
-        Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickPhoto, 0);
 
         // Quan fem click al SurfaceView, s'obra la galeria per triar una imatge
         mySurfaceView.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +111,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String photoName = getPhotoName();
                 Toast.makeText(MainActivity.this, photoName, Toast.LENGTH_SHORT).show();
-                //saveImage(photoName);
+                if (saveImage(photoName)) {
+                    Log.i("kike", "Imatge guardada");
+                } else {
+                    Log.i("kike", "Imatge no guardada");
+                }
             }
         });
     }
@@ -135,16 +158,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /*
     // Guardar una foto en un arxiu JPG
     private boolean saveImage(String name) {
-        // ima_final = Imageview
-        int final_foto = efRend.getFXphoto();
-        Log.i("kike", String.valueOf(final_foto));
-        String image_dir = "/OpenGL_Proba/";
+
+        //???????????????????????????
+        //GLES20.glCopyTexImage2D(GL_TEXTURE_2D, 10, GL_RGBA8, 0, 0, 200, 200, 0);
+        //GLES20.glGetTexImage(GL_TEXTURE_2D, 10, GL_RGBA, GL_SIGNED_INT_8_8_8_8, array);
+
+
+        int w = 100;
+        int h = w;
+        ByteBuffer buffer = ByteBuffer.allocateDirect(w * h * 4);
+        //buffer.order(ByteOrder.LITTLE_ENDIAN);
+        GLES20.glReadPixels(0, 0, w, h, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer);
+        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        bitmap.copyPixelsFromBuffer(buffer);
+
+
+        String image_dir = "/aaaa_OpenGLTest/";
         boolean guardat_ok = true;
+
+        /*
+        // ima_final es un Imageview
         BitmapDrawable draw = (BitmapDrawable) ima_final.getDrawable();
         Bitmap bitmap = draw.getBitmap();
+        */
+
         FileOutputStream outStream;
         File dir = new File(Environment.getExternalStorageDirectory(), image_dir);
         if (!dir.exists()) {
@@ -169,5 +208,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return guardat_ok;
     }
-    */
 }
